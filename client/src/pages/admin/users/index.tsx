@@ -6,6 +6,8 @@ import { InputSwitch } from "primereact/inputswitch";
 import { Dropdown } from "primereact/dropdown";
 import { BreadCrumb } from "primereact/breadcrumb";
 import { Toast } from "primereact/toast";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import { AuthContext } from "@/context/AuthContext";
 import AdminService from "@/services/admin-service";
 import type { IAdminUser } from "@/services/admin-service";
@@ -179,15 +181,15 @@ export function AdminUsersPage() {
     return (
       <div className="flex flex-column sm:flex-row justify-content-between align-items-center gap-3">
         <span className="text-xl font-bold text-900">Contas Cadastradas</span>
-        <div className="p-input-icon-left w-full sm:w-20rem">
-          <i className="pi pi-search" />
+        <IconField iconPosition="left" className="w-full sm:w-20rem">
+          <InputIcon className="pi pi-search" />
           <InputText
             value={globalFilterValue}
             onChange={(e) => setGlobalFilterValue(e.target.value)}
             placeholder="Pesquisar por nome, email, CPF..."
             className="w-full p-inputtext-sm"
           />
-        </div>
+        </IconField>
       </div>
     );
   };
