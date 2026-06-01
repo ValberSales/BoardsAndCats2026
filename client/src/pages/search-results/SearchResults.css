@@ -1,0 +1,44 @@
+/* Container Principal */
+.search-results-layout {
+    display: flex;
+    align-items: flex-start; /* Essencial para o sticky funcionar (não esticar a altura do filho) */
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Coluna da Direita: Lista de Resultados */
+.search-results-content {
+    flex: 1;
+    width: 100%;
+}
+
+.results-card {
+    background-color: var(--surface-card);
+}
+
+
+.desktop-filter-container {
+    min-width: 260px; 
+    position: sticky;   
+    top: 2rem; 
+    z-index: 1; 
+}
+
+@media (min-width: 901px) {
+    .filter-button {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .search-results-layout {
+        flex-direction: column;
+    }
+
+    .desktop-filter-container {
+        display: none;
+    }
+}

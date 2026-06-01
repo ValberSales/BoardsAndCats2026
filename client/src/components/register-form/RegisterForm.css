@@ -1,0 +1,70 @@
+
+.register-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.register-title {
+    font-size: 1.75rem; 
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+/* Corrige o link para ter a cor primária e remove underline padrão */
+.register-header a {
+    text-decoration: none !important;
+    color: var(--primary-color) !important;
+    transition: color 0.2s;
+}
+
+.register-header a:hover {
+    text-decoration: underline !important;
+    color: var(--primary-color) !important;
+}
+
+.input-label {
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.875rem;
+}
+
+.password-rules-box {
+    padding: 0;
+    width: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.password-rule-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--red-500);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.password-rule-item.rule-valid {
+    color: var(--green-500);
+    font-weight: 600;
+}
+
+.password-rule-icon {
+    font-size: 0.8rem;
+    margin-right: 0.3rem;
+}
+
+.error-message-placeholder {
+    min-height: 1.2rem; 
+    display: block;
+    color: var(--red-500);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
