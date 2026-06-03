@@ -28,7 +28,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -47,6 +49,15 @@ class OrderControllerTest {
 
     @MockitoBean
     private IOrderService orderService;
+
+    @MockitoBean
+    private br.edu.utfpr.pb.pw44s.server.repository.OrderDocumentRepository orderDocumentRepository;
+
+    @MockitoBean
+    private br.edu.utfpr.pb.pw44s.server.service.MinioService minioService;
+
+    @MockitoBean
+    private br.edu.utfpr.pb.pw44s.server.service.ICartService cartService;
 
     @TestConfiguration
     static class TestConfig {
@@ -160,5 +171,108 @@ class OrderControllerTest {
 
         mockMvc.perform(post("/orders/{id}/cancel", 100L))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Get Cart - Deve retornar carrinho do usuario")
+    void getCart_ShouldReturnCart() throws Exception {
+        br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO cartDTO = new br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO();
+        cartDTO.setId(5L);
+        when(cartService.getAndValidateCart(any(User.class))).thenReturn(cartDTO);
+
+        mockMvc.perform(get("/orders/cart"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(5L));
+    }
+
+    @Test
+    @DisplayName("Get Cart - Deve retornar 204 se vazio")
+    void getCart_ShouldReturnNoContent() throws Exception {
+        when(cartService.getAndValidateCart(any(User.class))).thenReturn(null);
+
+        mockMvc.perform(get("/orders/cart"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Add Item - Deve adicionar item e retornar carrinho")
+    void addItem_ShouldReturnCart() throws Exception {
+        br.edu.utfpr.pb.pw44s.server.dto.CartItemDTO itemDTO = new br.edu.utfpr.pb.pw44s.server.dto.CartItemDTO();
+        itemDTO.setProductId(2L);
+        itemDTO.setQuantity(1);
+
+        br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO cartDTO = new br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO();
+        cartDTO.setId(5L);
+
+        when(cartService.addItemToCart(any(User.class), eq(2L), eq(1))).thenReturn(cartDTO);
+
+        mockMvc.perform(post("/orders/cart/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(itemDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(5L));
+    }
+
+    @Test
+    @DisplayName("Update Item Qty - Deve atualizar quantidade e retornar carrinho")
+    void updateItemQty_ShouldReturnCart() throws Exception {
+        br.edu.utfpr.pb.pw44s.server.dto.CartItemDTO itemDTO = new br.edu.utfpr.pb.pw44s.server.dto.CartItemDTO();
+        itemDTO.setProductId(1L);
+        itemDTO.setQuantity(3);
+
+        br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO cartDTO = new br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO();
+        cartDTO.setId(5L);
+
+        when(cartService.updateItemQuantity(any(User.class), eq(1L), eq(3))).thenReturn(cartDTO);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/orders/cart/items/{productId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(itemDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(5L));
+    }
+
+    @Test
+    @DisplayName("Remove Item - Deve remover item e retornar carrinho")
+    void removeItem_ShouldReturnCart() throws Exception {
+        br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO cartDTO = new br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO();
+        cartDTO.setId(5L);
+
+        when(cartService.removeItem(any(User.class), eq(5L))).thenReturn(cartDTO);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/orders/cart/items/{productId}", 5L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(5L));
+    }
+
+    @Test
+    @DisplayName("Clear Cart - Deve limpar carrinho e retornar 204")
+    void clearCart_ShouldReturnNoContent() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/orders/cart"))
+                .andExpect(status().isNoContent());
+
+        verify(cartService).clearCart(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Cart Checkout - Deve realizar checkout e retornar 201")
+    void cartCheckout_ShouldReturnCreated() throws Exception {
+        CheckoutDTO checkoutDTO = new CheckoutDTO();
+        checkoutDTO.setAddressId(1L);
+        checkoutDTO.setPaymentMethodId(1L);
+
+        Order order = new Order();
+        order.setId(100L);
+        order.setUser(user);
+        order.setTotal(new BigDecimal("150.00"));
+
+        when(orderService.checkoutFromCart(any(CheckoutDTO.class), any(User.class)))
+                .thenReturn(order);
+
+        mockMvc.perform(post("/orders/cart/checkout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(checkoutDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(100L));
     }
 }

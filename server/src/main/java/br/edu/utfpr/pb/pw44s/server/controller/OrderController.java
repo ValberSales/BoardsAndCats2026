@@ -32,15 +32,18 @@ public class OrderController {
     private final ModelMapper modelMapper;
     private final OrderDocumentRepository orderDocumentRepository;
     private final MinioService minioService;
+    private final br.edu.utfpr.pb.pw44s.server.service.ICartService cartService;
 
     public OrderController(IOrderService orderService,
                            ModelMapper modelMapper,
                            OrderDocumentRepository orderDocumentRepository,
-                           MinioService minioService) {
+                           MinioService minioService,
+                           br.edu.utfpr.pb.pw44s.server.service.ICartService cartService) {
         this.orderService = orderService;
         this.modelMapper = modelMapper;
         this.orderDocumentRepository = orderDocumentRepository;
         this.minioService = minioService;
+        this.cartService = cartService;
     }
 
     @PostMapping("checkout")
@@ -91,6 +94,53 @@ public class OrderController {
                 .contentType(MediaType.parseMediaType(doc.getContentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + doc.getFileName() + "\"")
                 .body(new InputStreamResource(stream));
+    }
+
+    @GetMapping("cart")
+    public ResponseEntity<br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO> getCart(@AuthenticationPrincipal User user) {
+        br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO cartDTO = cartService.getAndValidateCart(user);
+        if (cartDTO == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(cartDTO);
+    }
+
+    @PostMapping("cart/items")
+    public ResponseEntity<br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO> addItemToCart(@RequestBody @Valid br.edu.utfpr.pb.pw44s.server.dto.CartItemDTO itemDTO,
+                                                                                          @AuthenticationPrincipal User user) {
+        br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO cartDTO = cartService.addItemToCart(user, itemDTO.getProductId(), itemDTO.getQuantity());
+        return ResponseEntity.ok(cartDTO);
+    }
+
+    @PutMapping("cart/items/{productId}")
+    public ResponseEntity<br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO> updateItemQuantity(@PathVariable Long productId,
+                                                                                               @RequestBody @Valid br.edu.utfpr.pb.pw44s.server.dto.CartItemDTO itemDTO,
+                                                                                               @AuthenticationPrincipal User user) {
+        br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO cartDTO = cartService.updateItemQuantity(user, productId, itemDTO.getQuantity());
+        return ResponseEntity.ok(cartDTO);
+    }
+
+    @DeleteMapping("cart/items/{productId}")
+    public ResponseEntity<br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO> removeItem(@PathVariable Long productId,
+                                                                                       @AuthenticationPrincipal User user) {
+        br.edu.utfpr.pb.pw44s.server.dto.CartResponseDTO cartDTO = cartService.removeItem(user, productId);
+        if (cartDTO == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(cartDTO);
+    }
+
+    @DeleteMapping("cart")
+    public ResponseEntity<Void> clearCart(@AuthenticationPrincipal User user) {
+        cartService.clearCart(user);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("cart/checkout")
+    public ResponseEntity<OrderDTO> cartCheckout(@RequestBody @Valid CheckoutDTO checkoutDTO,
+                                                 @AuthenticationPrincipal User user) {
+        Order finalizedOrder = orderService.checkoutFromCart(checkoutDTO, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(finalizedOrder, OrderDTO.class));
     }
 
     private Order findOrderAndCheckOwner(Long orderId, User loggedUser) {
