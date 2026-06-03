@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
@@ -8,11 +8,16 @@ import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { BreadCrumb } from "primereact/breadcrumb";
 import { Tag } from "primereact/tag";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import AdminService from "@/services/admin-service";
 import type { IAdminOrder } from "@/services/admin-service";
 
 export function AdminOrdersPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const statusParam = searchParams.get("status");
+
   const [orders, setOrders] = useState<IAdminOrder[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<IAdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +45,12 @@ export function AdminOrdersPage() {
   useEffect(() => {
     loadOrders();
   }, []);
+
+  useEffect(() => {
+    if (statusParam) {
+      setSelectedStatus(statusParam);
+    }
+  }, [statusParam]);
 
   // Aplicar filtros
   useEffect(() => {
@@ -194,8 +205,8 @@ export function AdminOrdersPage() {
             <label htmlFor="customer" className="block text-900 font-semibold text-sm mb-2">
               Cliente (Nome ou CPF)
             </label>
-            <span className="p-input-icon-left w-full">
-              <i className="pi pi-search" />
+            <IconField iconPosition="left" className="w-full">
+              <InputIcon className="pi pi-search" />
               <InputText
                 id="customer"
                 value={searchCustomer}
@@ -203,7 +214,7 @@ export function AdminOrdersPage() {
                 placeholder="Ex: Maria Lima ou 111.111..."
                 className="w-full p-inputtext-sm"
               />
-            </span>
+            </IconField>
           </div>
 
           {/* Status Search */}
