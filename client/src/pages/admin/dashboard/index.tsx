@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import AdminService from "@/services/admin-service";
 
@@ -39,7 +38,9 @@ export function AdminDashboardPage() {
       bgColor: "bg-orange-100",
       textColor: "text-orange-700",
       iconColor: "bg-orange-500 text-white",
+      borderColor: "border-orange-500",
       description: "Aguardando pagamento",
+      status: "PENDING",
     },
     {
       title: "Pagos",
@@ -48,7 +49,9 @@ export function AdminDashboardPage() {
       bgColor: "bg-blue-100",
       textColor: "text-blue-700",
       iconColor: "bg-blue-500 text-white",
+      borderColor: "border-blue-500",
       description: "Prontos para envio",
+      status: "PAID",
     },
     {
       title: "Enviados",
@@ -57,7 +60,9 @@ export function AdminDashboardPage() {
       bgColor: "bg-purple-100",
       textColor: "text-purple-700",
       iconColor: "bg-purple-500 text-white",
+      borderColor: "border-purple-500",
       description: "Em trânsito com código",
+      status: "SHIPPED",
     },
     {
       title: "Entregues",
@@ -66,7 +71,9 @@ export function AdminDashboardPage() {
       bgColor: "bg-green-100",
       textColor: "text-green-700",
       iconColor: "bg-green-500 text-white",
+      borderColor: "border-green-500",
       description: "Concluídos com sucesso",
+      status: "DELIVERED",
     },
     {
       title: "Cancelados",
@@ -75,7 +82,9 @@ export function AdminDashboardPage() {
       bgColor: "bg-red-100",
       textColor: "text-red-700",
       iconColor: "bg-red-500 text-white",
+      borderColor: "border-red-500",
       description: "Cancelados ou devolvidos",
+      status: "CANCELED",
     },
   ];
 
@@ -125,17 +134,29 @@ export function AdminDashboardPage() {
       {/* Grid of Totalizer Cards */}
       <div className="grid">
         {cardDetails.map((card, idx) => (
-          <div key={idx} className="col-12 sm:col-6 lg:col-4 xl:col-2 p-2">
-            <Card className="shadow-2 hover:shadow-4 transition-duration-200 border-round h-full border-top-3 border-primary">
-              <div className="flex justify-content-between align-items-center mb-3">
-                <span className="block text-500 font-semibold uppercase text-xs tracking-wider">{card.title}</span>
-                <div className={`flex align-items-center justify-content-center border-round w-3rem h-3rem ${card.bgColor} ${card.textColor}`}>
-                  <i className={`pi ${card.icon} text-2xl`}></i>
+          <div key={idx} className="col-12 sm:col-6 lg:col-4 xl:col p-2">
+            <div className={`surface-card shadow-2 hover:shadow-4 transition-all transition-duration-200 border-round h-full border-top-3 ${card.borderColor} p-4 flex flex-column justify-content-between`} style={{ borderTopWidth: '4px' }}>
+              <div>
+                <div className="flex justify-content-between align-items-center mb-3">
+                  <span className="block text-500 font-bold uppercase text-xs tracking-wider">{card.title}</span>
+                  <div className={`flex align-items-center justify-content-center border-round w-3rem h-3rem ${card.bgColor} ${card.textColor}`}>
+                    <i className={`pi ${card.icon} text-2xl`}></i>
+                  </div>
                 </div>
+                <div className="text-4xl font-bold text-900 mb-2">{card.count}</div>
+                <p className="text-500 text-xs m-0 mb-4">{card.description}</p>
               </div>
-              <div className="text-4xl font-bold text-900 mb-2">{card.count}</div>
-              <span className="text-500 text-xs">{card.description}</span>
-            </Card>
+              <div className="pt-3 border-top-1 surface-border flex align-items-center justify-content-between mt-auto">
+                <Button 
+                  label="Ver todos" 
+                  icon="pi pi-arrow-right" 
+                  iconPos="right" 
+                  link 
+                  className="p-0 text-sm font-semibold"
+                  onClick={() => navigate(`/admin/orders?status=${card.status}`)} 
+                />
+              </div>
+            </div>
           </div>
         ))}
       </div>
