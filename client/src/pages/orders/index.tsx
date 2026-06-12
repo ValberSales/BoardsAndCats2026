@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { Button } from "primereact/button";
 import OrderService from "@/services/order-service";
-import { OrderDetailDialog } from "@/components/order-detail-dialog";
+import { OrderDetailDialog } from "@/components/orders/order-detail-dialog";
 import type { IOrder } from '@/types/order';
 
 import "./OrdersPage.css";
