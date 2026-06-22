@@ -69,15 +69,17 @@ public class ShippingServiceImpl implements IShippingService {
             );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                return findCheapestOption(response.getBody());
+                BigDecimal price = findCheapestOption(response.getBody());
+                if (price.compareTo(BigDecimal.ZERO) > 0) {
+                    return price;
+                }
             }
 
         } catch (Exception e) {
-            // Em produção
             System.err.println("Erro na API de Frete: " + e.getMessage());
         }
 
-        return BigDecimal.ZERO;
+        return new BigDecimal("15.90");
     }
 
     private BigDecimal findCheapestOption(List<MelhorEnvioDTO.ShipmentOption> options) {

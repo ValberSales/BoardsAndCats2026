@@ -88,8 +88,8 @@ class ShippingServiceTest {
     }
 
     @Test
-    @DisplayName("Deve retornar ZERO se a API falhar ou lançar exceção")
-    void calculateShipping_ShouldReturnZero_OnApiException() {
+    @DisplayName("Deve retornar valor padrão de 15.90 se a API falhar ou lançar exceção")
+    void calculateShipping_ShouldReturnFallback_OnApiException() {
         // Given
         when(restTemplate.exchange(
                 anyString(),
@@ -102,7 +102,7 @@ class ShippingServiceTest {
         BigDecimal result = shippingService.calculateShipping("80000000", 1.0);
 
         // Then
-        assertThat(result).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(result).isEqualByComparingTo("15.90");
     }
 
     @Test
@@ -116,8 +116,8 @@ class ShippingServiceTest {
     }
 
     @Test
-    @DisplayName("Deve retornar ZERO se não houver opções de frete válidas")
-    void calculateShipping_ShouldReturnZero_WhenNoOptions() {
+    @DisplayName("Deve retornar valor padrão de 15.90 se não houver opções de frete válidas")
+    void calculateShipping_ShouldReturnFallback_WhenNoOptions() {
         // Given
         ResponseEntity<List<MelhorEnvioDTO.ShipmentOption>> responseEntity =
                 new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
@@ -130,6 +130,6 @@ class ShippingServiceTest {
         BigDecimal result = shippingService.calculateShipping("80000000", 1.0);
 
         // Then
-        assertThat(result).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(result).isEqualByComparingTo("15.90");
     }
 }
