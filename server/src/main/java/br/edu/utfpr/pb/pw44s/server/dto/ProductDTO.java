@@ -16,6 +16,9 @@ public class ProductDTO {
     private String description;
     private BigDecimal price;
     private Boolean promo;
+    private Boolean visible;
+    private String discountType;
+    private BigDecimal discountValue;
     private Integer stock;
     private String mechanics;
     private String players;

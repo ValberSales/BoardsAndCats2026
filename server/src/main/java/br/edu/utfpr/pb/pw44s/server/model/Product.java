@@ -27,7 +27,7 @@ public class Product {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(length = 1024)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @NotNull
@@ -49,6 +49,16 @@ public class Product {
     private Boolean promo;
 
     @NotNull
+    @Column(nullable = false)
+    private Boolean visible = true;
+
+    @Column(name = "discount_type")
+    private String discountType;
+
+    @Column(name = "discount_value")
+    private BigDecimal discountValue;
+
+    @NotNull
     @Min(value = 0, message = "O estoque não pode ser negativo.")
     @Column(nullable = false)
     private Integer stock;
@@ -66,4 +76,18 @@ public class Product {
 
     @Column(name = "idade_recomendada")
     private String idadeRecomendada; // Ex: "14+"
+
+    public BigDecimal getEffectivePrice() {
+        if (Boolean.TRUE.equals(promo) && discountValue != null && discountType != null) {
+            if ("PERCENTAGE".equals(discountType)) {
+                BigDecimal discount = price.multiply(discountValue).divide(new BigDecimal("100"));
+                BigDecimal finalPrice = price.subtract(discount);
+                return finalPrice.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : finalPrice.setScale(2, java.math.RoundingMode.HALF_UP);
+            } else if ("VALUE".equals(discountType)) {
+                BigDecimal finalPrice = price.subtract(discountValue);
+                return finalPrice.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : finalPrice.setScale(2, java.math.RoundingMode.HALF_UP);
+            }
+        }
+        return price;
+    }
 }
