@@ -1,0 +1,33 @@
+.footer-main {
+    background-color: var(--primary-color); 
+    color: var(--primary-color-text);
+}
+
+.footer-main a {
+    color: var(--primary-color-text) !important;
+    opacity: 0.85;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.footer-main a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.footer-main i {
+    color: var(--primary-color-text) !important;
+}
+
+.footer-main h4 {
+    color: var(--primary-color-text) !important;
+    opacity: 0.95;
+}
+
+
+.footer-copyright {
+
+    background-color: #1a0b2e; 
+    color: #ffffff;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}

@@ -1,0 +1,50 @@
+/* Customização do Dialog */
+.address-dialog {
+    width: 450px;
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+    border: 1px solid var(--surface-border);
+}
+
+.address-dialog .p-dialog-header {
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.address-dialog .p-dialog-footer {
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    padding: 1.5rem;
+}
+
+/* Customização de Inputs e Labels */
+.address-input {
+    border-radius: 8px;
+}
+
+.address-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: var(--text-color);
+}
+
+/* Rodapé */
+.address-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.btn-rounded-custom {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+/* Responsividade para o Dialog */
+@media screen and (max-width: 768px) {
+    .address-dialog {
+        width: 90vw;
+        margin: 0.5rem;
+    }
+}

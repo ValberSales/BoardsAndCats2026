@@ -1,0 +1,3 @@
+ALTER TABLE tb_product ADD COLUMN visible BOOLEAN DEFAULT TRUE NOT NULL;
+ALTER TABLE tb_product ADD COLUMN discount_type VARCHAR(50);
+ALTER TABLE tb_product ADD COLUMN discount_value DECIMAL(10,2);

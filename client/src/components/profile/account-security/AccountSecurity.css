@@ -1,0 +1,54 @@
+.security-card {
+    height: 100%;
+    border-radius: 16px !important;
+}
+
+.danger-zone-label {
+    font-size: 0.75rem;
+    color: var(--red-500);
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Dialog Personalizado */
+.delete-account-dialog {
+    width: 450px;
+    border-radius: 16px !important;
+    overflow: hidden;
+}
+
+.delete-account-dialog .p-dialog-header {
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
+}
+
+.delete-account-dialog .p-dialog-footer {
+    border-bottom-left-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
+    padding: 1.5rem;
+}
+
+.delete-account-dialog .danger-icon {
+    font-size: 3rem;
+    color: var(--red-500);
+    margin-bottom: 1.5rem;
+}
+
+/* Ajustes de Input e Botões */
+.full-width-password,
+.full-width-password .p-inputtext {
+    width: 100%;
+}
+
+.dialog-footer-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+}
+
+.dialog-btn {
+    flex: 1;
+    justify-content: center;
+}

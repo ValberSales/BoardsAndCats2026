@@ -1,5 +1,6 @@
 # Project exclude paths
 /server/target/
+.DS_Store
 # AI Development
 .ai-learning-log.md
 .antigravity-rules.md

@@ -11,9 +11,9 @@ import { CartContext } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { useScrollToTop } from '@/hooks/use-scroll-to-top';
 
-import { SearchFilterSidebar } from '@/components/search-filter-sidebar';
-import { ProductListItem } from '@/components/product-list-item';
-import { EmptyResults } from '@/components/empty-results'; // Componente restaurado
+import { SearchFilterSidebar } from '@/components/product/search-filter-sidebar';
+import { ProductListItem } from '@/components/product/product-list-item';
+import { EmptyResults } from '@/components/common/empty-results'; // Componente restaurado
 
 import './SearchResults.css';
 
@@ -59,7 +59,7 @@ export function SearchResultsPage() {
             if (query.trim()) {
                 const prodResponse = await ProductService.search(query);
                 if (prodResponse.success) {
-                    const results = prodResponse.data as IProduct[];
+                    const results = (prodResponse.data as IProduct[]).filter(p => p.visible !== false);
                     setAllProducts(results);
                     setFilteredProducts(results);
                 } else {

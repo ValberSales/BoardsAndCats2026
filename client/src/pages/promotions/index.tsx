@@ -3,7 +3,7 @@ import type { IProduct } from "@/types/product";
 import ProductService from "@/services/product-service";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { ProductGrid } from "@/components/product-grid";
+import { ProductGrid } from "@/components/product/product-grid";
 
 export const PromotionsPage = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -21,7 +21,7 @@ export const PromotionsPage = () => {
       
       if (response.status === 200 && Array.isArray(response.data)) {
         const allProducts = response.data as IProduct[];
-        const promoProducts = allProducts.filter(p => p.promo === true);
+        const promoProducts = allProducts.filter(p => p.promo === true && p.visible !== false);
         setProducts(promoProducts);
       }
     } catch (error) {

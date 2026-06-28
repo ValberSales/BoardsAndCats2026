@@ -15,4 +15,24 @@ public interface ICartService {
      * Sobrescreve o carrinho do usuário com os itens fornecidos.
      */
     CartResponseDTO saveCart(User user, CartSyncDTO cartSyncDTO);
+
+    /**
+     * Adiciona um item ao carrinho (incrementando a quantidade se ja existir).
+     */
+    CartResponseDTO addItemToCart(User user, Long productId, int quantity);
+
+    /**
+     * Atualiza a quantidade de um item no carrinho (substituindo o valor).
+     */
+    CartResponseDTO updateItemQuantity(User user, Long productId, int quantity);
+
+    /**
+     * Remove um item do carrinho.
+     */
+    CartResponseDTO removeItem(User user, Long productId);
+
+    /**
+     * Limpa todo o carrinho do usuario.
+     */
+    void clearCart(User user);
 }

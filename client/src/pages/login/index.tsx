@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/login-form";
+import { LoginForm } from "@/components/auth/login-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from 'primereact/card';
 import "./Login.css";

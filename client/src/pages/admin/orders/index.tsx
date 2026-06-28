@@ -161,10 +161,10 @@ export function AdminOrdersPage() {
   const actionsTemplate = (rowData: IAdminOrder) => {
     return (
       <Button
+        label="Detalhes"
         icon="pi pi-search"
-        tooltip="Ver Detalhes"
-        tooltipOptions={{ position: "left" }}
-        className="p-button-rounded p-button-text p-button-sm"
+        outlined
+        className="p-button-sm border-round-lg"
         onClick={() => navigate(`/admin/orders/${rowData.id}`)}
       />
     );

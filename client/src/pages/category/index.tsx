@@ -5,7 +5,7 @@ import ProductService from "@/services/product-service";
 import CategoryService from "@/services/category-service";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { ProductGrid } from "@/components/product-grid";
+import { ProductGrid } from "@/components/product/product-grid";
 
 export const CategoryPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,7 +29,7 @@ export const CategoryPage = () => {
       ]);
 
       if (productRes.status === 200 && Array.isArray(productRes.data)) {
-        setProducts(productRes.data);
+        setProducts(productRes.data.filter(p => p.visible !== false));
       }
       
       if (catRes.status === 200 && catRes.data) {

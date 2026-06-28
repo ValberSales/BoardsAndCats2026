@@ -17,4 +17,6 @@ public class CategoryDTO {
     @NotNull
     @Size(min = 3, max = 255)
     private String name;
+
+    private String icon;
 }

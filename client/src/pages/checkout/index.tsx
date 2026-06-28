@@ -8,10 +8,10 @@ import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Divider } from "primereact/divider";
 import { CartContext } from "@/context/CartContext";
-import { CheckoutSummary } from "@/components/checkout-summary";
-import { CartReviewList } from "@/components/cart-review-list";
-import { AddressSelector } from "@/components/address-selector";
-import { PaymentSelector } from "@/components/payment-selector"; 
+import { CheckoutSummary } from "@/components/checkout/checkout-summary";
+import { CartReviewList } from "@/components/cart/cart-review-list";
+import { AddressSelector } from "@/components/checkout/address-selector";
+import { PaymentSelector } from "@/components/checkout/payment-selector"; 
 import { api } from "@/lib/axios";
 
 import type { IAddress } from "@/types/address";

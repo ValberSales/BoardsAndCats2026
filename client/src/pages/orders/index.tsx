@@ -69,12 +69,10 @@ export const OrdersPage = () => {
 
     const actionTemplate = (order: IOrder) => (
         <Button 
-            icon="pi pi-eye" 
-            rounded 
-            text 
-            className="btn-view-order"
-            tooltip="Ver Detalhes"
-            tooltipOptions={{ position: 'left' }}
+            label="Detalhes"
+            icon="pi pi-search" 
+            outlined
+            className="p-button-sm border-round-lg"
             onClick={() => openDetails(order)} 
         />
     );
@@ -140,8 +138,8 @@ export const OrdersPage = () => {
                                         </span>
                                     </div>
                                     <Button 
-                                        label="Ver Detalhes" 
-                                        icon="pi pi-eye" 
+                                        label="Detalhes" 
+                                        icon="pi pi-search" 
                                         outlined 
                                         className="w-full mt-3 border-round-lg" 
                                         size="small"

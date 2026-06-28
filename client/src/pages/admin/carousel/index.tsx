@@ -37,7 +37,9 @@ export function AdminCarouselPage() {
   const [banner, setBanner] = useState<ICarouselItem>({ imageUrl: "", alt: "" });
   const [submitted, setSubmitted] = useState(false);
   
-  // Image Upload state
+  // Image Upload & Preview state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const breadcrumbItems = [
@@ -75,7 +77,18 @@ export function AdminCarouselPage() {
   };
 
   const openNew = () => {
+    if (banners.length >= 6) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Limite Atingido",
+        detail: "O limite máximo é de 6 banners no carrossel.",
+        life: 3000
+      });
+      return;
+    }
     setBanner({ imageUrl: "", alt: "" });
+    setSelectedFile(null);
+    setPreviewUrl("");
     setSubmitted(false);
     setBannerDialog(true);
   };
@@ -83,6 +96,8 @@ export function AdminCarouselPage() {
   const hideDialog = () => {
     setBannerDialog(false);
     setSubmitted(false);
+    setSelectedFile(null);
+    setPreviewUrl("");
   };
 
   const hideDeleteDialog = () => {
@@ -92,8 +107,40 @@ export function AdminCarouselPage() {
   const saveBanner = async () => {
     setSubmitted(true);
 
-    if (banner.imageUrl.trim() && banner.alt.trim()) {
-      const response = await CarouselService.save(banner);
+    // Validate image presence
+    if (!previewUrl && !selectedFile) {
+      return;
+    }
+
+    // Validate alt text
+    if (!banner.alt.trim()) {
+      return;
+    }
+
+    // Limit check for new banners
+    if (!banner.id && banners.length >= 6) {
+      toastRef.current?.show({
+        severity: "error",
+        summary: "Limite Atingido",
+        detail: "O limite máximo é de 6 banners no carrossel.",
+        life: 3000
+      });
+      return;
+    }
+
+    let finalImageUrl = banner.imageUrl;
+    setUploadingImage(true);
+
+    try {
+      // If a new file is selected, upload it first
+      if (selectedFile) {
+        const filename = await MediaService.upload(selectedFile);
+        finalImageUrl = `/media/${filename}`;
+      }
+
+      const bannerToSave = { ...banner, imageUrl: finalImageUrl };
+      const response = await CarouselService.save(bannerToSave);
+
       if (response.success) {
         toastRef.current?.show({
           severity: "success",
@@ -104,6 +151,8 @@ export function AdminCarouselPage() {
         loadBanners();
         setBannerDialog(false);
         setBanner({ imageUrl: "", alt: "" });
+        setSelectedFile(null);
+        setPreviewUrl("");
       } else {
         toastRef.current?.show({
           severity: "error",
@@ -112,11 +161,22 @@ export function AdminCarouselPage() {
           life: 3000
         });
       }
+    } catch (err) {
+      toastRef.current?.show({
+        severity: "error",
+        summary: "Erro Upload",
+        detail: "Falha ao enviar arquivo ou salvar o banner.",
+        life: 3000
+      });
+    } finally {
+      setUploadingImage(false);
     }
   };
 
   const editBanner = (item: ICarouselItem) => {
     setBanner({ ...item });
+    setSelectedFile(null);
+    setPreviewUrl(item.imageUrl);
     setBannerDialog(true);
   };
 
@@ -149,30 +209,12 @@ export function AdminCarouselPage() {
     }
   };
 
-  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setUploadingImage(true);
-    try {
-      const filename = await MediaService.upload(file);
-      setBanner({ ...banner, imageUrl: `/media/${filename}` });
-      toastRef.current?.show({
-        severity: "success",
-        summary: "Upload Sucesso",
-        detail: "Imagem enviada para o MinIO com sucesso!",
-        life: 2000
-      });
-    } catch (err) {
-      toastRef.current?.show({
-        severity: "error",
-        summary: "Erro Upload",
-        detail: "Falha ao enviar arquivo para o MinIO.",
-        life: 3000
-      });
-    } finally {
-      setUploadingImage(false);
-    }
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
   const imageBodyTemplate = (rowData: ICarouselItem) => {
@@ -217,7 +259,7 @@ export function AdminCarouselPage() {
   const dialogFooter = (
     <div className="flex justify-content-end gap-2">
       <Button label="Cancelar" icon="pi pi-times" outlined onClick={hideDialog} />
-      <Button label="Salvar" icon="pi pi-check" onClick={saveBanner} disabled={uploadingImage} />
+      <Button label="Salvar" icon="pi pi-check" onClick={saveBanner} loading={uploadingImage} disabled={uploadingImage} />
     </div>
   );
 
@@ -236,11 +278,18 @@ export function AdminCarouselPage() {
       <div className="flex flex-column sm:flex-row justify-content-between align-items-start sm:align-items-center mb-5 gap-3">
         <div>
           <h1 className="text-3xl font-bold text-900 m-0">Carrossel de Destaques</h1>
-          <p className="text-600 m-0 mt-1">Configure os banners do carrossel rotativo na página principal.</p>
+          <p className="text-600 m-0 mt-1">Configure os banners do carrossel rotativo na página principal (máximo de 6 banners).</p>
         </div>
         <div className="flex gap-2">
           <Button label="Voltar ao Painel" icon="pi pi-arrow-left" className="p-button-outlined" onClick={() => navigate("/admin/dashboard")} />
-          <Button label="Novo Banner" icon="pi pi-plus" onClick={openNew} />
+          <Button 
+            label="Novo Banner" 
+            icon="pi pi-plus" 
+            onClick={openNew} 
+            disabled={banners.length >= 6} 
+            tooltip={banners.length >= 6 ? "Limite de 6 banners atingido" : undefined}
+            tooltipOptions={{ position: "bottom" }}
+          />
         </div>
       </div>
 
@@ -275,9 +324,9 @@ export function AdminCarouselPage() {
         <div className="field mb-4">
           <label className="font-bold mb-2 block">Imagem do Banner (1200x400 recomendado) *</label>
           <div className="flex flex-column align-items-center justify-content-center p-4 border-2 border-dashed border-300 border-round hover:border-primary transition-duration-200 cursor-pointer relative" style={{ minHeight: "150px" }}>
-            {banner.imageUrl ? (
+            {previewUrl ? (
               <img
-                src={`${API_BASE_URL}${banner.imageUrl}`}
+                src={previewUrl.startsWith("blob:") ? previewUrl : `${API_BASE_URL}${previewUrl}`}
                 alt="Prévia do Banner"
                 style={{ maxWidth: "100%", maxHeight: "120px", objectFit: "contain" }}
               />
@@ -297,7 +346,7 @@ export function AdminCarouselPage() {
               disabled={uploadingImage}
             />
           </div>
-          {submitted && !banner.imageUrl && (
+          {submitted && !previewUrl && (
             <small className="p-error block mt-1">É obrigatório selecionar uma imagem.</small>
           )}
         </div>

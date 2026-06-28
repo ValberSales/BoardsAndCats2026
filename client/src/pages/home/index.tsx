@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import type { IProduct } from  "@/types/product";
 import ProductService from "@/services/product-service";
 import { Toast } from "primereact/toast";
-import { CategoryShelf } from "@/components/category-shelf";
-import { BannerCarousel } from "@/components/banner-carousel"; // <--- Importe aqui
+import { CategoryShelf } from "@/components/product/category-shelf";
+import { BannerCarousel } from "@/components/home/banner-carousel"; // <--- Importe aqui
 
 export const HomePage = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -30,10 +30,11 @@ export const HomePage = () => {
     }
   };
 
-  const boardGames = products.filter(p => p.category.name === "Jogos de Tabuleiro");
-  const cardGames = products.filter(p => p.category.name === "Card Games");
-  const acessorios = products.filter(p => p.category.name === "Acessórios");
-  const promoProducts = products.filter(p => p.promo === true);
+  const visibleProducts = products.filter(p => p.visible !== false);
+  const boardGames = visibleProducts.filter(p => p.category.name === "Jogos de Tabuleiro");
+  const cardGames = visibleProducts.filter(p => p.category.name === "Card Games");
+  const acessorios = visibleProducts.filter(p => p.category.name === "Acessórios");
+  const promoProducts = visibleProducts.filter(p => p.promo === true);
 
   return (
     <div> 

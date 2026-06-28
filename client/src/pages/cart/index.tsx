@@ -5,8 +5,8 @@ import { Toast } from "primereact/toast";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Tooltip } from "primereact/tooltip";
 import { CartContext } from "@/context/CartContext";
-import { CartItemList } from "@/components/cart-item-list";
-import { CartSummary } from "@/components/cart-summary";
+import { CartItemList } from "@/components/cart/cart-item-list";
+import { CartSummary } from "@/components/cart/cart-summary";
 
 import "./Cart.css";
 

@@ -1,0 +1,65 @@
+.category-card {
+  border: none !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 200px;
+}
+
+/* Center content inside the PrimeReact Card body */
+.category-card .p-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem !important;
+  height: 100%;
+  background: transparent !important;
+}
+
+.category-card .p-card-content {
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dark mode overrides for card shadow */
+.layout-dark .category-card {
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+}
+
+.category-card-icon-container {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none !important;
+}
+
+/* Hover effects */
+.category-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+.category-card:hover .category-card-icon-container svg {
+  color: var(--primary-color) !important;
+  fill: var(--primary-color) !important;
+}
+
+.category-card:hover .category-card-icon-container svg * {
+  stroke: var(--primary-color) !important;
+}
+
+.category-card:hover span {
+  color: var(--primary-color) !important;
+}
+
+/* Instant color transition (no delay/fade) */
+.category-card-icon svg,
+.category-card-icon svg * {
+  transition: none !important;
+}

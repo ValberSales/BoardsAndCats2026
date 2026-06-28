@@ -82,3 +82,97 @@ body {
 .p-dialog .p-resizable-handle {
     display: none !important;
 }
+
+.p-card,
+.surface-card,
+.p-card.border-round,
+.surface-card.border-round {
+    border-radius: 16px !important;
+}
+
+/* Smooth row reordering transitions in DataTable and Custom Table */
+.p-datatable-tbody > tr,
+.categories-drag-table tbody > tr {
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+.p-row-dragging {
+    opacity: 0.7;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: var(--surface-hover) !important;
+    z-index: 1001;
+}
+
+/* Premium checkerboard background pattern for transparent SVG previews */
+.checkerboard-bg {
+  background-image: radial-gradient(var(--surface-300) 15%, transparent 16%),
+                    radial-gradient(var(--surface-300) 15%, transparent 16%);
+  background-size: 16px 16px;
+  background-position: 0 0, 8px 8px;
+  background-color: var(--surface-100);
+}
+
+/* Ensure inline SVGs scale and adapt to parent theme/text colors */
+.category-icon-wrapper svg,
+.category-icon-preview svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  fill: currentColor !important;
+  transition: fill 0.2s ease-in-out, stroke 0.2s ease-in-out;
+}
+
+.category-icon-wrapper svg g,
+.category-icon-preview svg g {
+  fill: currentColor !important;
+}
+
+/* Handle stroke-based SVGs */
+.category-icon-wrapper svg[stroke],
+.category-icon-preview svg[stroke] {
+  stroke: currentColor !important;
+  fill: none !important;
+}
+.category-icon-wrapper svg[stroke] g,
+.category-icon-preview svg[stroke] g {
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* Global container max-width constraint to prevent stretching on large screens */
+.container {
+  max-width: 1500px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Enforce consistent card background colors in dark mode across admin panels and dashboard */
+.surface-card {
+  background-color: var(--surface-card) !important;
+  border-radius: 16px !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.layout-dark .surface-card {
+  background-color: #1f2937 !important; /* Specific dark gray matching PrimeReact Card in dark mode */
+  color: #f3f4f6 !important;
+  border-color: #374151 !important;
+}
+
+.layout-dark .text-900 {
+  color: #f3f4f6 !important;
+}
+
+.layout-dark .text-700 {
+  color: #d1d5db !important;
+}
+
+.layout-dark .text-600 {
+  color: #9ca3af !important;
+}
+
+.layout-dark .text-500 {
+  color: #9ca3af !important;
+}

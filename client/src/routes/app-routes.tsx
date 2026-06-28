@@ -1,25 +1,26 @@
 import { Route, Routes } from "react-router-dom";
-import { Layout } from "@/components/layout";
+import { Layout } from "@/components/layout/layout";
 import { HomePage } from "@/pages/home";
 import { LoginPage } from "@/pages/login";
 import { RegisterPage } from "@/pages/register";
 import { ProductDetailPage } from "@/pages/product-detail";
 import { CategoryPage } from "@/pages/category"; 
+import { CategoriesPage } from "@/pages/categories";
 import { PromotionsPage } from "@/pages/promotions";
 import { AboutPage } from "@/pages/institutional/about";
 import { LocationPage } from "@/pages/institutional/location";
 import { ContactPage } from "@/pages/institutional/contact";
-import { RequireAuth } from "@/components/require-auth";
+import { RequireAuth } from "@/components/common/require-auth";
 import { ProfilePage } from "@/pages/profile";
 import { OrdersPage } from "@/pages/orders";
 import { CartPage } from "@/pages/cart";
 import { CheckoutPage } from "@/pages/checkout";
 import { WishlistPage } from "@/pages/wishlist";
 import { SearchResultsPage } from "@/pages/search-results";
-import { ScrollToTop } from "@/components/scroll-to-top";
+import { ScrollToTop } from "@/components/common/scroll-to-top";
 
 // Admin Imports
-import { RequireAdmin } from "@/components/require-admin";
+import { RequireAdmin } from "@/components/common/require-admin";
 import { AdminDashboardPage } from "@/pages/admin/dashboard";
 import { AdminUsersPage } from "@/pages/admin/users";
 import { AdminOrdersPage } from "@/pages/admin/orders";
@@ -43,6 +44,7 @@ export function AppRoutes() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/categories/:id" element={<CategoryPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/promotions" element={<PromotionsPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/search" element={<SearchResultsPage />} />

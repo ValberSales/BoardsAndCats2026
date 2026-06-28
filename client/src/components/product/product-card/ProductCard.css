@@ -1,0 +1,165 @@
+/* Wrapper externo */
+.product-card-wrapper {
+  cursor: pointer;
+  height: 100%; 
+  display: flex;
+  padding-bottom: 0.3rem;
+  transition: transform 0.2s ease-out;
+}
+
+.product-card-wrapper:hover {
+  transform: translateY(-0.3rem);
+}
+
+/* O Card do PrimeReact */
+.product-card-wrapper .p-card {
+  width: 100%;
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+  box-shadow: 0 0.25rem 0.6rem rgba(0,0,0,0.1); 
+  border: 1px solid var(--surface-border);
+  background-color: var(--surface-card);
+  color: var(--text-color);
+  border-radius: 16px;
+}
+
+/* Força o corpo do card a ocupar o espaço restante */
+.product-card-wrapper .p-card-body {
+  flex: 1 1 auto;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-card);
+}
+
+.product-card-wrapper .p-card-content {
+  padding: 0;
+  flex: 1; /* Faz o conteúdo crescer */
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- 1. ÁREA DA IMAGEM --- */
+.product-card-wrapper .p-card-header {
+  flex: 0 0 auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  background-color: var(--surface-card);
+}
+
+.product-card-image-container {
+  width: 100%;
+  height: 15rem; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: white;
+  margin: 0.5rem;
+  border-radius: 16px;
+}
+
+.product-card-image {  
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 16px; 
+}
+
+/* --- 2. CONTEÚDO INTERNO --- */
+
+.product-card-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  height: 100%;
+  min-height: 5rem; 
+}
+
+/* Título do Produto */
+.product-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+
+  /* Lógica para limitar a 2 linhas */
+  line-height: 1.25;
+  height: 2.5em;
+  overflow: hidden;       
+  word-wrap: break-word;
+}
+
+/* Linha Inferior: Preço e Botão */
+.product-card-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  margin-top: auto; 
+}
+
+.product-card-price {
+  color: var(--primary-color); 
+  font-weight: 700;
+  font-size: 1.2rem; 
+  white-space: nowrap; 
+}
+
+.product-card-price-original {
+  color: #888888 !important; /* Cinza claro para o preço original */
+  font-size: 0.85rem;
+  text-decoration: line-through;
+  display: block;
+}
+
+.product-card-price-promo {
+  color: var(--primary-color) !important; /* Cor do tema (ciano) para o preço em promoção */
+  font-weight: 700;
+  font-size: 1.25rem;
+  white-space: nowrap;
+  display: block;
+}
+
+/* Botão Wishlist */
+.btn-wishlist-inline {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+}
+
+.btn-wishlist-inline:hover {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* --- 3. FOOTER --- */
+.product-card-wrapper .p-card-footer {
+  padding: 0;
+  margin-top: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.btn-add-cart {
+  width: 100%;
+  height: 2.5rem;
+  background-color: var(--surface-card) !important;
+  border: 2px solid var(--primary-color) !important; 
+  color: var(--primary-color) !important; 
+  font-weight: 600 !important;
+  transition: all 0.2s !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.btn-add-cart:hover {
+  background-color: var(--primary-color) !important; 
+  color: var(--primary-color-text) !important; 
+  border-color: var(--primary-color) !important;
+}

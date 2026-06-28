@@ -1,4 +1,4 @@
-import { RegisterForm } from "@/components/register-form";
+import { RegisterForm } from "@/components/auth/register-form";
 import { API_BASE_URL } from "@/lib/axios";
 
 export const RegisterPage = () => {

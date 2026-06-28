@@ -20,6 +20,9 @@ let themeHref = `https://unpkg.com/primereact/resources/themes/lara-light-${them
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme === "dark") {
   themeHref = `https://unpkg.com/primereact/resources/themes/lara-dark-${themeBase}/theme.css`;
+  document.documentElement.classList.add("layout-dark");
+} else {
+  document.documentElement.classList.add("layout-light");
 }
 
 let link = document.getElementById(themeId) as HTMLLinkElement;

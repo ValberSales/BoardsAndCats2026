@@ -1,11 +1,11 @@
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import { Toast } from "primereact/toast"; 
 
-import { ProfileForm } from "@/components/profile-form";
-import { AddressList } from "@/components/address-list";
-import { PaymentMethodList } from "@/components/payment-method-list";
-import { AccountSecurity } from "@/components/account-security"; 
-import { ProfileNavigation } from "@/components/profile-navigation";
+import { ProfileForm } from "@/components/profile/profile-form";
+import { AddressList } from "@/components/profile/address-list";
+import { PaymentMethodList } from "@/components/profile/payment-method-list";
+import { AccountSecurity } from "@/components/profile/account-security"; 
+import { ProfileNavigation } from "@/components/profile/profile-navigation";
 
 import "./Profile.css";
 
