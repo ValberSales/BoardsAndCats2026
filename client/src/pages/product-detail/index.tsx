@@ -6,8 +6,8 @@ import { Tag } from "primereact/tag";
 import { Divider } from "primereact/divider";
 import { classNames } from "primereact/utils";
 import ProductService from "@/services/product-service";
-import type { IProduct } from "@/types/product";
-import { ProductGallery } from "@/components/product-gallery";
+import { type IProduct, getEffectivePrice, getDiscountPercentage } from "@/types/product";
+import { ProductGallery } from "@/components/product/product-gallery";
 import { CartContext } from "@/context/CartContext";
 import { useToast } from "@/context/ToastContext"; 
 import { useWishlist } from "@/hooks/use-wishlist"; 
@@ -63,7 +63,10 @@ export const ProductDetailPage = () => {
 
     if (!product) return null;
 
-    const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const hasPromo = product.promo && product.discountType && product.discountValue !== undefined;
+    const effectivePrice = getEffectivePrice(product);
+    const formattedPrice = effectivePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const formattedOriginalPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const isOutOfStock = product.stock === 0;
     const isLowOnStock = product.stock <= 10 && product.stock !== 0;
     return (
@@ -89,11 +92,28 @@ export const ProductDetailPage = () => {
 
                         <h1 className="font-bold text-3xl mb-2 mt-0 text-900">{product.name}</h1>
                         
-                        <div className="flex align-items-center gap-3 mb-4">
-                            <span className="text-4xl font-bold text-primary">{formattedPrice}</span>
-                            {product.promo && <Tag value="OFERTA" severity="success" rounded></Tag>}
-                            {isOutOfStock && <Tag value="ESGOTADO" severity="danger" icon="pi pi-ban" rounded></Tag>}
-                            {isLowOnStock && <Tag value={"RESTAM "+product.stock+" UN"} severity="warning" icon="pi pi-exclamation-triangle" rounded></Tag>}
+                        <div className="flex flex-column gap-1 mb-4">
+                            {hasPromo ? (
+                                <>
+                                    <span className="text-base line-through m-0" style={{ color: '#888888' }}>
+                                        {formattedOriginalPrice}
+                                    </span>
+                                    <div className="flex align-items-center gap-3 flex-wrap">
+                                        <span className="text-4xl font-bold text-primary">
+                                            {formattedPrice}
+                                        </span>
+                                        <Tag value={`${getDiscountPercentage(product)}% OFF`} severity="success" className="font-bold" rounded></Tag>
+                                        {isOutOfStock && <Tag value="ESGOTADO" severity="danger" icon="pi pi-ban" rounded></Tag>}
+                                        {isLowOnStock && <Tag value={"RESTAM "+product.stock+" UN"} severity="warning" icon="pi pi-exclamation-triangle" rounded></Tag>}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="flex align-items-center gap-3 flex-wrap">
+                                    <span className="text-4xl font-bold text-primary">{formattedPrice}</span>
+                                    {isOutOfStock && <Tag value="ESGOTADO" severity="danger" icon="pi pi-ban" rounded></Tag>}
+                                    {isLowOnStock && <Tag value={"RESTAM "+product.stock+" UN"} severity="warning" icon="pi pi-exclamation-triangle" rounded></Tag>}
+                                </div>
+                            )}
                         </div>
 
                         {/* Ações */}
