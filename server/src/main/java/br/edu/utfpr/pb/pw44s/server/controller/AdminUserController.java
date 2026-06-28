@@ -4,6 +4,9 @@ import br.edu.utfpr.pb.pw44s.server.dto.UserDTO;
 import br.edu.utfpr.pb.pw44s.server.model.User;
 import br.edu.utfpr.pb.pw44s.server.repository.UserRepository;
 import br.edu.utfpr.pb.pw44s.server.service.LogService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/users")
+@Tag(name = "Admin - Usuários", description = "Endpoints administrativos para gerenciamento e auditoria de contas de usuários")
 public class AdminUserController {
 
     private final UserRepository userRepository;
@@ -22,6 +26,7 @@ public class AdminUserController {
     }
 
     @GetMapping
+    @Operation(summary = "Listar todos os usuários cadastrados", description = "Retorna uma lista completa de todos os usuários cadastrados no sistema (clientes e administradores).")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userRepository.findAll();
         List<UserDTO> dtos = users.stream()
@@ -31,7 +36,9 @@ public class AdminUserController {
     }
 
     @PutMapping("/{id}/toggle-active")
-    public ResponseEntity<UserDTO> toggleUserActive(@PathVariable Long id) {
+    @Operation(summary = "Ativar ou desativar usuário pelo ID", description = "Inverte o estado de ativação de uma conta de usuário (bloqueia ou desbloqueia o acesso).")
+    public ResponseEntity<UserDTO> toggleUserActive(
+            @Parameter(description = "ID do usuário", example = "1") @PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -45,7 +52,10 @@ public class AdminUserController {
     }
 
     @PutMapping("/{id}/role")
-    public ResponseEntity<UserDTO> updateUserRole(@PathVariable Long id, @RequestParam String role) {
+    @Operation(summary = "Alterar nível de acesso (ROLE) do usuário", description = "Altera a função/permissão do usuário (ex: USER para ADMIN ou vice-versa).")
+    public ResponseEntity<UserDTO> updateUserRole(
+            @Parameter(description = "ID do usuário", example = "1") @PathVariable Long id,
+            @Parameter(description = "Nova ROLE (USER ou ADMIN)", example = "ADMIN") @RequestParam String role) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 

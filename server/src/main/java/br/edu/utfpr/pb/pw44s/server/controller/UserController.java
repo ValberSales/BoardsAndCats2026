@@ -9,6 +9,9 @@ import br.edu.utfpr.pb.pw44s.server.model.User;
 import br.edu.utfpr.pb.pw44s.server.security.SecurityConstants;
 import br.edu.utfpr.pb.pw44s.server.security.TokenService;
 import br.edu.utfpr.pb.pw44s.server.service.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("users")
+@Tag(name = "Usuários", description = "Endpoints para cadastro, perfil e segurança da conta do usuário")
 public class UserController {
 
     private final IUserService userService;
@@ -34,6 +38,7 @@ public class UserController {
     }
 
     @PostMapping("register")
+    @Operation(summary = "Registrar um novo usuário", description = "Cria uma nova conta de cliente com as informações fornecidas no corpo da requisição.")
     public ResponseEntity<UserDTO> register(@RequestBody @Valid UserCreateDTO userCreateDTO) {
         User userToSave = modelMapper.map(userCreateDTO, User.class);
         User savedUser = userService.save(userToSave);
@@ -41,13 +46,16 @@ public class UserController {
     }
 
     @GetMapping("me")
-    public ResponseEntity<UserDTO> getMyProfile(@AuthenticationPrincipal User user) {
+    @Operation(summary = "Obter perfil do usuário autenticado", description = "Retorna os dados do perfil do usuário atualmente autenticado na sessão (via token JWT).")
+    public ResponseEntity<UserDTO> getMyProfile(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(modelMapper.map(user, UserDTO.class));
     }
 
     @PutMapping("me")
-    public ResponseEntity<UserDTO> updateMyProfile(@AuthenticationPrincipal User user,
-                                                   @RequestBody @Valid UserProfileDTO userProfileDTO) {
+    @Operation(summary = "Atualizar informações do perfil", description = "Atualiza os dados cadastrais (nome, telefone, e-mail) do usuário autenticado e retorna um novo token JWT atualizado.")
+    public ResponseEntity<UserDTO> updateMyProfile(
+            @Parameter(hidden = true) @AuthenticationPrincipal User user,
+            @RequestBody @Valid UserProfileDTO userProfileDTO) {
         user.setDisplayName(userProfileDTO.getDisplayName());
         user.setPhone(userProfileDTO.getPhone());
         user.setUsername(userProfileDTO.getUsername());
@@ -64,8 +72,10 @@ public class UserController {
     }
 
     @PatchMapping("me/password")
-    public ResponseEntity<Void> changePassword(@AuthenticationPrincipal User user,
-                                               @RequestBody @Valid UserPasswordDTO passwordDTO) {
+    @Operation(summary = "Alterar senha do usuário", description = "Altera a senha do usuário autenticado após validar a senha atual fornecida.")
+    public ResponseEntity<Void> changePassword(
+            @Parameter(hidden = true) @AuthenticationPrincipal User user,
+            @RequestBody @Valid UserPasswordDTO passwordDTO) {
         userService.changePassword(user, passwordDTO.getCurrentPassword(), passwordDTO.getNewPassword());
         String newToken = tokenService.generateToken(user);
 
@@ -79,6 +89,7 @@ public class UserController {
 
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Excluir conta do usuário", description = "Remove permanentemente a conta do usuário autenticado do sistema após confirmação da senha.")
     public void deleteMe(@RequestBody @Valid UserConfirmationDTO confirmationDTO) {
         userService.deleteMe(confirmationDTO.getPassword());
     }

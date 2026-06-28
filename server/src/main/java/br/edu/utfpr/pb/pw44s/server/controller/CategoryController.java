@@ -4,12 +4,14 @@ import br.edu.utfpr.pb.pw44s.server.dto.CategoryDTO;
 import br.edu.utfpr.pb.pw44s.server.model.Category;
 import br.edu.utfpr.pb.pw44s.server.service.ICategoryService;
 import br.edu.utfpr.pb.pw44s.server.service.ICrudService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("categories")
+@Tag(name = "Categorias", description = "Endpoints para consulta e gerenciamento de categorias de produtos")
 public class CategoryController extends CrudController<Category, CategoryDTO, Long> {
 
     private final ICategoryService categoryService;
