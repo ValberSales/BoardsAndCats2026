@@ -135,10 +135,19 @@ public class CartServiceImpl implements ICartService {
         dto.setPriceAtSave(item.getPriceAtSave());
         dto.setQuantity(item.getQuantity());
 
+        // Valida Visibilidade
+        if (Boolean.FALSE.equals(product.getVisible())) {
+            item.setQuantity(0);
+            dto.setQuantity(0);
+            dto.setValidationMessage("Produto indisponível.");
+            return dto;
+        }
+
         // Valida Preço
-        if (product.getPrice().compareTo(item.getPriceAtSave()) != 0) {
-            item.setPriceAtSave(product.getPrice());
-            dto.setPriceAtSave(product.getPrice());
+        BigDecimal effectivePrice = product.getEffectivePrice();
+        if (effectivePrice.compareTo(item.getPriceAtSave()) != 0) {
+            item.setPriceAtSave(effectivePrice);
+            dto.setPriceAtSave(effectivePrice);
             dto.setValidationMessage("Preço atualizado.");
         }
 
@@ -161,7 +170,7 @@ public class CartServiceImpl implements ICartService {
         int quantidadeFinal = Math.min(quantidadeSolicitada, product.getStock());
 
         item.setQuantity(quantidadeFinal);
-        item.setPriceAtSave(product.getPrice());
+        item.setPriceAtSave(product.getEffectivePrice());
         return item;
     }
 
@@ -178,5 +187,113 @@ public class CartServiceImpl implements ICartService {
         responseDTO.setItems(items);
         responseDTO.setTotal(total);
         return responseDTO;
+    }
+
+    @Override
+    @Transactional
+    public CartResponseDTO addItemToCart(User user, Long productId, int quantity) {
+        Cart cart = cartRepository.findByUserId(user.getId()).orElseGet(() -> {
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            return cartRepository.save(newCart);
+        });
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Produto não encontrado."));
+
+        if (product.getStock() == 0) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Produto fora de estoque.");
+        }
+
+        if (Boolean.FALSE.equals(product.getVisible())) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Produto indisponível.");
+        }
+
+        CartItem existingItem = cart.getItems().stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst()
+                .orElse(null);
+
+        if (existingItem != null) {
+            int newQuantity = existingItem.getQuantity() + quantity;
+            existingItem.setQuantity(Math.min(newQuantity, product.getStock()));
+            existingItem.setPriceAtSave(product.getEffectivePrice());
+        } else {
+            CartItem newItem = new CartItem();
+            newItem.setCart(cart);
+            newItem.setProductId(productId);
+            newItem.setQuantity(Math.min(quantity, product.getStock()));
+            newItem.setPriceAtSave(product.getEffectivePrice());
+            cart.getItems().add(newItem);
+        }
+
+        cartRepository.save(cart);
+        return getAndValidateCart(user);
+    }
+
+    @Override
+    @Transactional
+    public CartResponseDTO updateItemQuantity(User user, Long productId, int quantity) {
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Carrinho não encontrado."));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Produto não encontrado."));
+
+        CartItem existingItem = cart.getItems().stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Item não encontrado no carrinho."));
+
+        if (quantity <= 0) {
+            cart.getItems().remove(existingItem);
+        } else {
+            existingItem.setQuantity(Math.min(quantity, product.getStock()));
+            existingItem.setPriceAtSave(product.getEffectivePrice());
+        }
+
+        if (cart.getItems().isEmpty()) {
+            cartRepository.delete(cart);
+            return null;
+        }
+
+        cartRepository.save(cart);
+        return getAndValidateCart(user);
+    }
+
+    @Override
+    @Transactional
+    public CartResponseDTO removeItem(User user, Long productId) {
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Carrinho não encontrado."));
+
+        CartItem existingItem = cart.getItems().stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Item não encontrado no carrinho."));
+
+        cart.getItems().remove(existingItem);
+
+        if (cart.getItems().isEmpty()) {
+            cartRepository.delete(cart);
+            return null;
+        }
+
+        cartRepository.save(cart);
+        return getAndValidateCart(user);
+    }
+
+    @Override
+    @Transactional
+    public void clearCart(User user) {
+        cartRepository.findByUserId(user.getId()).ifPresent(cartRepository::delete);
     }
 }

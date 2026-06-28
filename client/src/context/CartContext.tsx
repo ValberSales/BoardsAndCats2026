@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 import type { ReactNode } from "react";
 import type { ICartItem, ICartItemResponse, ICartSyncPayload } from "@/types/cart";
-import type { IProduct } from "@/types/product";
+import { type IProduct, getEffectivePrice } from "@/types/product";
 import CartService from "@/services/cart-service";
 import { AuthContext } from "./AuthContext";
 
@@ -175,7 +175,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const count = items.reduce((acc, item) => acc + item.quantity, 0);
-  const total = items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+  const total = items.reduce((acc, item) => acc + (getEffectivePrice(item.product) * item.quantity), 0);
 
   return (
     <CartContext.Provider value={{ 
