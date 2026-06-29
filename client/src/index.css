@@ -176,3 +176,70 @@ body {
 .layout-dark .text-500 {
   color: #9ca3af !important;
 }
+
+/* --- RESPONSIVE ADMIN UTILITIES --- */
+.admin-table-desktop {
+  display: block;
+}
+
+.admin-mobile-list {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-mobile-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  margin-bottom: 0.75rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.admin-mobile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.admin-mobile-label {
+  color: var(--text-color-secondary);
+  font-weight: 500;
+}
+
+.admin-mobile-value {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.admin-mobile-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--surface-border);
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .admin-table-desktop {
+    display: none !important;
+  }
+
+  .admin-mobile-list {
+    display: flex !important;
+  }
+}

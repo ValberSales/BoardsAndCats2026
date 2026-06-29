@@ -209,28 +209,106 @@ export function AdminUsersPage() {
         </p>
       </div>
 
-      {/* Table Card */}
-      <div className="surface-card shadow-2 border-round p-4">
-        <DataTable
-          value={filteredUsers}
-          loading={loading}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 20]}
-          dataKey="id"
-          header={renderHeader()}
-          emptyMessage="Nenhum usuário correspondente encontrado."
-          responsiveLayout="stack"
-          breakpoint="960px"
-          className="p-datatable-striped"
-        >
-          <Column field="id" header="ID" sortable style={{ width: "8%" }} />
-          <Column header="Nome e E-mail" body={nameTemplate} sortable field="displayName" style={{ width: "30%" }} />
-          <Column field="cpf" header="CPF" sortable style={{ width: "15%" }} />
-          <Column field="phone" header="Telefone" style={{ width: "15%" }} />
-          <Column header="Perfil / Permissão" body={roleTemplate} sortable field="role" style={{ width: "16%" }} />
-          <Column header="Status de Conta" body={activeTemplate} sortable field="enabled" style={{ width: "16%" }} />
-        </DataTable>
+      {/* Filtros e Busca */}
+      <div className="surface-card shadow-2 border-round p-4 mb-4">
+        {renderHeader()}
+      </div>
+
+      {/* Table Card (Desktop) */}
+      <div className="admin-table-desktop">
+        <div className="surface-card shadow-2 border-round p-4">
+          <DataTable
+            value={filteredUsers}
+            loading={loading}
+            paginator
+            rows={10}
+            rowsPerPageOptions={[5, 10, 20]}
+            dataKey="id"
+            emptyMessage="Nenhum usuário correspondente encontrado."
+            responsiveLayout="scroll"
+            className="p-datatable-striped"
+          >
+            <Column field="id" header="ID" sortable style={{ width: "8%" }} />
+            <Column header="Nome e E-mail" body={nameTemplate} sortable field="displayName" style={{ width: "30%" }} />
+            <Column field="cpf" header="CPF" sortable style={{ width: "15%" }} />
+            <Column field="phone" header="Telefone" style={{ width: "15%" }} />
+            <Column header="Perfil / Permissão" body={roleTemplate} sortable field="role" style={{ width: "16%" }} />
+            <Column header="Status de Conta" body={activeTemplate} sortable field="enabled" style={{ width: "16%" }} />
+          </DataTable>
+        </div>
+      </div>
+
+      {/* VERSÃO MOBILE: Lista de Cards de Usuários */}
+      <div className="admin-mobile-list">
+        {loading ? (
+          <div className="text-center p-4">
+            <i className="pi pi-spin pi-spinner text-2xl text-primary" />
+          </div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="text-center p-4 text-500 surface-card border-round-xl border-1 border-100">
+            Nenhum usuário correspondente encontrado.
+          </div>
+        ) : (
+          filteredUsers.map((u) => {
+            const isSelf = authenticatedUser?.username === u.username;
+            return (
+              <div key={u.id} className="admin-mobile-card">
+                <div className="admin-mobile-header">
+                  <div className="flex flex-column">
+                    <span className="font-bold text-900 text-lg flex align-items-center gap-2">
+                      {u.displayName}
+                      {isSelf && (
+                        <span className="bg-primary-100 text-primary-700 text-xs px-2 py-0.5 border-round font-semibold">
+                          Você
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-500 text-xs mt-0.5">{u.username}</span>
+                  </div>
+                  <span className="text-500 text-sm">ID: #{u.id}</span>
+                </div>
+                <div className="admin-mobile-row">
+                  <span className="admin-mobile-label">CPF</span>
+                  <span className="admin-mobile-value">{u.cpf}</span>
+                </div>
+                <div className="admin-mobile-row">
+                  <span className="admin-mobile-label">Telefone</span>
+                  <span className="admin-mobile-value">{u.phone || "Não cadastrado"}</span>
+                </div>
+                <div className="admin-mobile-row">
+                  <span className="admin-mobile-label">Perfil</span>
+                  <span className="admin-mobile-value">
+                    {isSelf ? (
+                      <span className="font-semibold text-900">
+                        {u.role === "ADMIN" ? "Administrador" : "Usuário Comum"}
+                      </span>
+                    ) : (
+                      <Dropdown
+                        value={u.role}
+                        options={roleOptions}
+                        onChange={(e) => handleRoleChange(u.id, e.value)}
+                        className="w-10rem p-inputtext-sm"
+                      />
+                    )}
+                  </span>
+                </div>
+                <div className="admin-mobile-row">
+                  <span className="admin-mobile-label">Status</span>
+                  <span className="admin-mobile-value flex align-items-center gap-2">
+                    <InputSwitch
+                      checked={u.enabled}
+                      onChange={() => handleActiveToggle(u.id, u.enabled)}
+                      disabled={isSelf}
+                    />
+                    <span className={`text-sm ${u.enabled ? "text-green-600 font-semibold" : "text-500"}`}>
+                      {u.enabled ? "Ativo" : "Inativo"}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

@@ -264,27 +264,86 @@ export function AdminOrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="surface-card shadow-2 border-round p-4">
-        <DataTable
-          value={filteredOrders}
-          loading={loading}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 20]}
-          dataKey="id"
-          emptyMessage="Nenhum pedido correspondente encontrado."
-          responsiveLayout="stack"
-          breakpoint="960px"
-          className="p-datatable-striped"
-        >
-          <Column field="id" header="Nº Pedido" sortable style={{ width: "12%" }} />
-          <Column header="Data" body={dateTemplate} sortable field="date" style={{ width: "15%" }} />
-          <Column header="Cliente" body={clientTemplate} sortable field="clientName" style={{ width: "30%" }} />
-          <Column field="paymentMethod" header="Método de Pagamento" style={{ width: "20%" }} />
-          <Column header="Total" body={currencyTemplate} sortable field="total" style={{ width: "13%" }} />
-          <Column header="Status" body={statusTemplate} sortable field="status" style={{ width: "15%" }} />
-          <Column body={actionsTemplate} style={{ width: "8%", textAlign: "center" }} />
-        </DataTable>
+      <div className="admin-table-desktop">
+        <div className="surface-card shadow-2 border-round p-4">
+          <DataTable
+            value={filteredOrders}
+            loading={loading}
+            paginator
+            rows={10}
+            rowsPerPageOptions={[5, 10, 20]}
+            dataKey="id"
+            emptyMessage="Nenhum pedido correspondente encontrado."
+            responsiveLayout="scroll"
+            className="p-datatable-striped"
+          >
+            <Column field="id" header="Nº Pedido" sortable style={{ width: "12%" }} />
+            <Column header="Data" body={dateTemplate} sortable field="date" style={{ width: "15%" }} />
+            <Column header="Cliente" body={clientTemplate} sortable field="clientName" style={{ width: "30%" }} />
+            <Column field="paymentMethod" header="Método de Pagamento" style={{ width: "20%" }} />
+            <Column header="Total" body={currencyTemplate} sortable field="total" style={{ width: "13%" }} />
+            <Column header="Status" body={statusTemplate} sortable field="status" style={{ width: "15%" }} />
+            <Column body={actionsTemplate} style={{ width: "8%", textAlign: "center" }} />
+          </DataTable>
+        </div>
+      </div>
+
+      {/* VERSÃO MOBILE: Lista de Cards de Pedidos Admin */}
+      <div className="admin-mobile-list">
+        {loading ? (
+          <div className="text-center p-4">
+            <i className="pi pi-spin pi-spinner text-2xl text-primary" />
+          </div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="text-center p-4 text-500 surface-card border-round-xl border-1 border-100">
+            Nenhum pedido correspondente encontrado.
+          </div>
+        ) : (
+          filteredOrders.map((order) => (
+            <div key={order.id} className="admin-mobile-card">
+              <div className="admin-mobile-header">
+                <span className="font-bold text-900 text-lg">Pedido #{order.id}</span>
+                <Tag 
+                  value={getStatusLabel(order.status)} 
+                  severity={getStatusSeverity(order.status) as any} 
+                  rounded 
+                />
+              </div>
+              <div className="admin-mobile-row">
+                <span className="admin-mobile-label">Data</span>
+                <span className="admin-mobile-value">
+                  {order.date ? `${order.date.split("-")[2]}/${order.date.split("-")[1]}/${order.date.split("-")[0]}` : ""}
+                </span>
+              </div>
+              <div className="admin-mobile-row">
+                <span className="admin-mobile-label">Cliente</span>
+                <div className="flex flex-column align-items-end">
+                  <span className="admin-mobile-value">{order.clientName}</span>
+                  <span className="text-500 text-xs">CPF: {order.clientCpf}</span>
+                </div>
+              </div>
+              <div className="admin-mobile-row">
+                <span className="admin-mobile-label">Pagamento</span>
+                <span className="admin-mobile-value">{order.paymentMethod}</span>
+              </div>
+              <div className="admin-mobile-row">
+                <span className="admin-mobile-label">Total</span>
+                <span className="admin-mobile-value text-primary font-bold">
+                  {order.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </span>
+              </div>
+              <div className="admin-mobile-actions">
+                <Button
+                  label="Detalhes"
+                  icon="pi pi-search"
+                  outlined
+                  className="w-full border-round-lg"
+                  onClick={() => navigate(`/admin/orders/${order.id}`)}
+                />
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

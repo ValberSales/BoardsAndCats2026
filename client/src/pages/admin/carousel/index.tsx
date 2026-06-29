@@ -293,21 +293,90 @@ export function AdminCarouselPage() {
         </div>
       </div>
 
-      <div className="surface-card shadow-2 border-round p-4">
-        <DataTable
-          value={banners}
-          loading={loading}
-          paginator
-          rows={10}
-          emptyMessage="Nenhum banner cadastrado."
-          responsiveLayout="scroll"
-        >
-          <Column field="id" header="ID" sortable style={{ width: "10%" }} />
-          <Column header="Visualização" body={imageBodyTemplate} style={{ width: "30%" }} />
-          <Column field="alt" header="Texto Alternativo" sortable style={{ width: "30%" }} />
-          <Column header="Link para Produto" body={productBodyTemplate} style={{ width: "20%" }} />
-          <Column body={actionBodyTemplate} exportable={false} style={{ width: "10%" }} />
-        </DataTable>
+      {/* VERSÃO DESKTOP: Tabela de Banners */}
+      <div className="admin-table-desktop">
+        <div className="surface-card shadow-2 border-round p-4">
+          <DataTable
+            value={banners}
+            loading={loading}
+            paginator
+            rows={10}
+            emptyMessage="Nenhum banner cadastrado."
+            responsiveLayout="scroll"
+          >
+            <Column field="id" header="ID" sortable style={{ width: "10%" }} />
+            <Column header="Visualização" body={imageBodyTemplate} style={{ width: "30%" }} />
+            <Column field="alt" header="Texto Alternativo" sortable style={{ width: "30%" }} />
+            <Column header="Link para Produto" body={productBodyTemplate} style={{ width: "20%" }} />
+            <Column body={actionBodyTemplate} exportable={false} style={{ width: "10%" }} />
+          </DataTable>
+        </div>
+      </div>
+
+      {/* VERSÃO MOBILE: Lista de Cards de Banners */}
+      <div className="admin-mobile-list">
+        {loading ? (
+          <div className="text-center p-4">
+            <i className="pi pi-spin pi-spinner text-2xl text-primary" />
+          </div>
+        ) : banners.length === 0 ? (
+          <div className="text-center p-4 text-500 surface-card border-round-xl border-1 border-100">
+            Nenhum banner cadastrado.
+          </div>
+        ) : (
+          banners.map((b) => {
+            const linkedProd = products.find(p => p.id === b.productId);
+            return (
+              <div key={b.id} className="admin-mobile-card">
+                <div className="admin-mobile-header">
+                  <span className="font-bold text-900 text-lg">Banner #{b.id}</span>
+                  <span className="text-500 text-xs">ID: #{b.id}</span>
+                </div>
+                
+                <div className="mb-3">
+                  <img
+                    src={`${API_BASE_URL}${b.imageUrl}`}
+                    alt={b.alt}
+                    className="shadow-2 border-round w-full"
+                    style={{ maxHeight: "150px", objectFit: "cover" }}
+                  />
+                </div>
+
+                <div className="admin-mobile-row">
+                  <span className="admin-mobile-label">Texto Alt</span>
+                  <span className="admin-mobile-value text-right" style={{ wordBreak: "break-word", maxWidth: "70%" }}>
+                    {b.alt}
+                  </span>
+                </div>
+
+                <div className="admin-mobile-row">
+                  <span className="admin-mobile-label">Produto Vinculado</span>
+                  <span className="admin-mobile-value text-primary text-right">
+                    {linkedProd ? linkedProd.name : "Nenhum (Apenas imagem)"}
+                  </span>
+                </div>
+
+                <div className="admin-mobile-actions">
+                  <Button
+                    icon="pi pi-pencil"
+                    outlined
+                    className="p-button-sm"
+                    onClick={() => editBanner(b)}
+                    label="Editar"
+                  />
+                  <Button
+                    icon="pi pi-trash"
+                    outlined
+                    severity="danger"
+                    className="p-button-sm"
+                    onClick={() => confirmDeleteBanner(b)}
+                    label="Excluir"
+                  />
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Dialogo Banner */}

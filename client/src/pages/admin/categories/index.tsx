@@ -254,7 +254,7 @@ export function AdminCategoriesPage() {
         </div>
       </div>
 
-      <div className="surface-card shadow-2 border-round p-4 overflow-x-auto">
+      <div className="surface-card shadow-2 border-round p-4 overflow-x-auto admin-table-desktop">
         <div className="p-datatable p-component p-datatable-responsive-scroll categories-drag-table">
           <table className="p-datatable-table w-full" style={{ borderCollapse: "collapse" }}>
             <thead className="p-datatable-thead">
@@ -335,6 +335,69 @@ export function AdminCategoriesPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* VERSÃO MOBILE: Lista de Cards de Categorias */}
+      <div className="admin-mobile-list">
+        {loading ? (
+          <div className="text-center p-4">
+            <i className="pi pi-spin pi-spinner text-2xl text-primary" />
+          </div>
+        ) : categories.length === 0 ? (
+          <div className="text-center p-4 text-500 surface-card border-round-xl border-1 border-100">
+            Nenhuma categoria encontrada.
+          </div>
+        ) : (
+          categories.map((cat, index) => {
+            const isFavorite = index < 3;
+            return (
+              <div 
+                key={cat.id || index} 
+                className={`admin-mobile-card ${isFavorite ? "border-left-3 border-primary" : ""}`}
+              >
+                <div className="admin-mobile-header">
+                  <div className="flex align-items-center gap-2">
+                    <CategoryIcon iconHtml={cat.icon} size={24} className="text-900" />
+                    <span className="font-bold text-900 text-lg">{cat.name}</span>
+                  </div>
+                  <span className="text-500 text-sm">ID: {cat.id}</span>
+                </div>
+                <div className="admin-mobile-row">
+                  <span className="admin-mobile-label">Exibição</span>
+                  <span className="admin-mobile-value">
+                    {isFavorite ? (
+                      <Tag
+                        value="No Menu Principal"
+                        severity="success"
+                        icon="pi pi-star-fill"
+                        className="text-xs font-bold"
+                      />
+                    ) : (
+                      <span className="text-500 text-xs">Padrão</span>
+                    )}
+                  </span>
+                </div>
+                <div className="admin-mobile-actions">
+                  <Button
+                    icon="pi pi-pencil"
+                    label="Editar"
+                    outlined
+                    className="p-button-sm"
+                    onClick={() => editCategory(cat)}
+                  />
+                  <Button
+                    icon="pi pi-trash"
+                    label="Excluir"
+                    outlined
+                    severity="danger"
+                    className="p-button-sm"
+                    onClick={() => confirmDeleteCategory(cat)}
+                  />
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Cadastrar/Editar Categoria */}

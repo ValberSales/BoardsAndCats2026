@@ -9,6 +9,7 @@ import { InputIcon } from "primereact/inputicon";
 import { Toast } from "primereact/toast";
 import { BreadCrumb } from "primereact/breadcrumb";
 import { SelectButton } from "primereact/selectbutton";
+import { Tag } from "primereact/tag";
 import { ProductDialog } from "./components/ProductDialog";
 import { DeleteProductDialog } from "./components/DeleteProductDialog";
 import { API_BASE_URL } from "@/lib/axios";
@@ -371,27 +372,128 @@ export function AdminProductsPage() {
         </div>
       </div>
 
-      <div className="surface-card shadow-2 border-round p-4">
-        <DataTable
-          value={filteredProducts}
-          loading={loading}
-          paginator
-          rows={10}
-          globalFilter={globalFilter}
-          header={header}
-          emptyMessage="Nenhum produto cadastrado."
-          responsiveLayout="stack"
-          breakpoint="960px"
-        >
-          <Column field="id" header="ID" sortable style={{ width: "8%" }} />
-          <Column header="Imagem" body={imageBodyTemplate} style={{ width: "10%" }} />
-          <Column field="name" header="Nome" sortable style={{ width: "25%" }} />
-          <Column field="category.name" header="Categoria" sortable style={{ width: "15%" }} />
-          <Column field="price" header="Preço" body={priceBodyTemplate} sortable style={{ width: "12%" }} />
-          <Column field="stock" header="Estoque" sortable style={{ width: "10%" }} />
-          <Column field="promo" header="Oferta" body={promoBodyTemplate} sortable style={{ width: "10%" }} />
-          <Column body={actionBodyTemplate} exportable={false} style={{ width: "10%" }} />
-        </DataTable>
+      {/* Filtros e Busca */}
+      <div className="surface-card shadow-2 border-round p-4 mb-4">
+        {renderHeader()}
+      </div>
+
+      {/* VERSÃO DESKTOP: Tabela de Produtos */}
+      <div className="admin-table-desktop">
+        <div className="surface-card shadow-2 border-round p-4">
+          <DataTable
+            value={filteredProducts}
+            loading={loading}
+            paginator
+            rows={10}
+            globalFilter={globalFilter}
+            emptyMessage="Nenhum produto cadastrado."
+            responsiveLayout="scroll"
+          >
+            <Column field="id" header="ID" sortable style={{ width: "8%" }} />
+            <Column header="Imagem" body={imageBodyTemplate} style={{ width: "10%" }} />
+            <Column field="name" header="Nome" sortable style={{ width: "25%" }} />
+            <Column field="category.name" header="Categoria" sortable style={{ width: "15%" }} />
+            <Column field="price" header="Preço" body={priceBodyTemplate} sortable style={{ width: "12%" }} />
+            <Column field="stock" header="Estoque" sortable style={{ width: "10%" }} />
+            <Column field="promo" header="Oferta" body={promoBodyTemplate} sortable style={{ width: "10%" }} />
+            <Column body={actionBodyTemplate} exportable={false} style={{ width: "10%" }} />
+          </DataTable>
+        </div>
+      </div>
+
+      {/* VERSÃO MOBILE: Lista de Cards de Produtos */}
+      <div className="admin-mobile-list">
+        {loading ? (
+          <div className="text-center p-4">
+            <i className="pi pi-spin pi-spinner text-2xl text-primary" />
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center p-4 text-500 surface-card border-round-xl border-1 border-100">
+            Nenhum produto cadastrado.
+          </div>
+        ) : (
+          filteredProducts
+            .filter(p => {
+              if (!globalFilter.trim()) return true;
+              const q = globalFilter.toLowerCase();
+              return (p.name?.toLowerCase() || "").includes(q) || (p.description?.toLowerCase() || "").includes(q);
+            })
+            .map((prod) => {
+              const isVisible = prod.visible !== false;
+              return (
+                <div key={prod.id} className="admin-mobile-card">
+                  <div className="admin-mobile-header">
+                    <div className="flex align-items-center gap-3">
+                      <img
+                        src={`${API_BASE_URL}${prod.imageUrl}`}
+                        alt={prod.name}
+                        className="shadow-2 border-round"
+                        style={{ width: "45px", height: "45px", objectFit: "cover" }}
+                      />
+                      <div className="flex flex-column">
+                        <span className="font-bold text-900 text-lg">{prod.name}</span>
+                        <span className="text-500 text-xs">ID: #{prod.id}</span>
+                      </div>
+                    </div>
+                    <Tag 
+                      value={isVisible ? "Ativo" : "Inativo"} 
+                      severity={isVisible ? "success" : "warning"} 
+                      rounded 
+                    />
+                  </div>
+                  <div className="admin-mobile-row">
+                    <span className="admin-mobile-label">Categoria</span>
+                    <span className="admin-mobile-value">{prod.category?.name || "Geral"}</span>
+                  </div>
+                  <div className="admin-mobile-row">
+                    <span className="admin-mobile-label">Preço</span>
+                    <span className="admin-mobile-value text-primary font-bold">
+                      {prod.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    </span>
+                  </div>
+                  <div className="admin-mobile-row">
+                    <span className="admin-mobile-label">Estoque</span>
+                    <span className="admin-mobile-value">{prod.stock} unidades</span>
+                  </div>
+                  <div className="admin-mobile-row">
+                    <span className="admin-mobile-label">Oferta</span>
+                    <span className="admin-mobile-value">
+                      {prod.promo ? (
+                        <span className="text-green-600 font-semibold">Sim</span>
+                      ) : (
+                        <span className="text-500">Não</span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="admin-mobile-actions">
+                    <Button
+                      icon={isVisible ? "pi pi-eye" : "pi pi-eye-slash"}
+                      outlined
+                      severity={isVisible ? "secondary" : "warning"}
+                      className="p-button-sm"
+                      onClick={() => toggleVisibility(prod)}
+                      label={isVisible ? "Ocultar" : "Mostrar"}
+                    />
+                    <Button
+                      icon="pi pi-pencil"
+                      outlined
+                      className="p-button-sm"
+                      onClick={() => editProduct(prod)}
+                      label="Editar"
+                    />
+                    <Button
+                      icon="pi pi-trash"
+                      outlined
+                      severity="danger"
+                      className="p-button-sm"
+                      onClick={() => confirmDeleteProduct(prod)}
+                      label="Excluir"
+                    />
+                  </div>
+                </div>
+              );
+            })
+        )}
       </div>
 
       {/* Cadastro / Edição de Produto */}
