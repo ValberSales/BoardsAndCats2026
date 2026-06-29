@@ -28,6 +28,7 @@ import { AdminOrderDetailPage } from "@/pages/admin/orders/detail";
 import { AdminProductsPage } from "@/pages/admin/products";
 import { AdminCategoriesPage } from "@/pages/admin/categories";
 import { AdminCarouselPage } from "@/pages/admin/carousel";
+import { AdminLogsPage } from "@/pages/admin/logs";
 
 export function AppRoutes() {
   return (
@@ -69,6 +70,7 @@ export function AppRoutes() {
               <Route path="/admin/products" element={<AdminProductsPage />} />
               <Route path="/admin/categories" element={<AdminCategoriesPage />} />
               <Route path="/admin/carousel" element={<AdminCarouselPage />} />
+              <Route path="/admin/logs" element={<AdminLogsPage />} />
           </Route>
         </Route>
       </Routes>

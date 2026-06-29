@@ -103,6 +103,7 @@ public class OrderServiceImpl extends CrudServiceImpl<Order, Long> implements IO
         restaurarEstoque(order.getItems());
 
         order.setStatus(OrderStatus.CANCELED);
+        order.setStatusDate(java.time.LocalDateTime.now());
         return super.save(order);
     }
 
@@ -114,6 +115,7 @@ public class OrderServiceImpl extends CrudServiceImpl<Order, Long> implements IO
             throw new RuntimeException("Apenas pedidos com status PENDING podem ser pagos.");
         }
         order.setStatus(OrderStatus.PAID);
+        order.setStatusDate(java.time.LocalDateTime.now());
         return super.save(order);
     }
 
@@ -126,6 +128,7 @@ public class OrderServiceImpl extends CrudServiceImpl<Order, Long> implements IO
         }
         order.setStatus(OrderStatus.SHIPPED);
         order.setTrackingCode(trackingCode);
+        order.setStatusDate(java.time.LocalDateTime.now());
         return super.save(order);
     }
 
@@ -137,6 +140,7 @@ public class OrderServiceImpl extends CrudServiceImpl<Order, Long> implements IO
             throw new RuntimeException("Apenas pedidos com status SHIPPED podem ser marcados como entregues.");
         }
         order.setStatus(OrderStatus.DELIVERED);
+        order.setStatusDate(java.time.LocalDateTime.now());
         return super.save(order);
     }
 

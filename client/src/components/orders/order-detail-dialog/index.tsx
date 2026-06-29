@@ -108,12 +108,13 @@ export const OrderDetailDialog = ({ visible, onHide, order }: OrderDetailDialogP
     };
 
     const customizedContent = (item: any) => {
+        const displayDate = order.statusDate ? new Date(order.statusDate) : new Date(order.date);
         return (
             <div className={`flex flex-column ${!item.active ? 'opacity-50' : ''}`}>
                 <span className="font-bold text-900 text-lg mb-1">{item.label}</span>
                 {item.status === order.status && (
                     <div className="text-sm text-color-secondary">
-                        {new Date(order.date).toLocaleDateString('pt-BR')} às {new Date(order.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        {displayDate.toLocaleDateString('pt-BR')} às {displayDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </div>
                 )}
             </div>

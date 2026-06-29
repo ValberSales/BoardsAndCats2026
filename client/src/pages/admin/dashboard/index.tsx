@@ -126,7 +126,13 @@ export function AdminDashboardPage() {
           <Button
             label="Carrossel"
             icon="pi pi-images"
+            className="p-button-outlined"
             onClick={() => navigate("/admin/carousel")}
+          />
+          <Button
+            label="Logs"
+            icon="pi pi-terminal"
+            onClick={() => navigate("/admin/logs")}
           />
         </div>
       </div>
@@ -278,6 +284,28 @@ export function AdminDashboardPage() {
               iconPos="right"
               className="w-full"
               onClick={() => navigate("/admin/carousel")}
+            />
+          </div>
+        </div>
+
+        {/* Card de Logs (Largura Total na Base) */}
+        <div className="col-12 p-2">
+          <div className="surface-card p-5 shadow-2 border-round flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center gap-4">
+            <div className="flex align-items-center gap-4">
+              <div className="bg-primary-100 text-primary-700 border-circle flex align-items-center justify-content-center w-3.5rem h-3.5rem flex-shrink-0" style={{ width: '3.5rem', height: '3.5rem' }}>
+                <i className="pi pi-terminal text-3xl"></i>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-900 m-0">Logs e Auditoria do Sistema</h2>
+                <p className="text-600 m-0 text-sm mt-1">Visualize logs do servidor em tempo real para acompanhar envio de e-mails, auditorias de status e exceções.</p>
+              </div>
+            </div>
+            <Button
+              label="Visualizar Logs do Servidor"
+              icon="pi pi-arrow-right"
+              iconPos="right"
+              className="w-full md:w-auto flex-shrink-0"
+              onClick={() => navigate("/admin/logs")}
             />
           </div>
         </div>

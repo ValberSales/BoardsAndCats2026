@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,9 @@ public class Order {
 
     @NotNull
     private LocalDate date;
+
+    @Column(name = "status_date")
+    private LocalDateTime statusDate = LocalDateTime.now();
 
     @NotNull
     @Enumerated(EnumType.STRING)

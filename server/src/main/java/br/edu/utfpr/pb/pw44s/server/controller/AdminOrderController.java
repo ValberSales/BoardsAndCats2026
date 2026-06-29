@@ -80,6 +80,7 @@ public class AdminOrderController {
 
         OrderStatus oldStatus = order.getStatus();
         order.setStatus(status);
+        order.setStatusDate(java.time.LocalDateTime.now());
         if (trackingCode != null && !trackingCode.trim().isEmpty()) {
             order.setTrackingCode(trackingCode);
         }

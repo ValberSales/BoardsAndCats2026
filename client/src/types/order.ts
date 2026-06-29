@@ -35,6 +35,7 @@ export interface IOrderDocument {
 export interface IOrder {
     id: number;
     date: string; 
+    statusDate?: string;
     status: 'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELED';
     shipping: number;
     total: number;
