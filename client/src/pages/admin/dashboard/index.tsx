@@ -12,6 +12,10 @@ export function AdminDashboardPage() {
     DELIVERED: 0,
     CANCELED: 0,
   });
+  const [extraStats, setExtraStats] = useState({
+    totalRevenue: 0,
+    lowStockProducts: 0,
+  });
 
   useEffect(() => {
     const loadStats = async () => {
@@ -24,6 +28,10 @@ export function AdminDashboardPage() {
           SHIPPED: stats.shippedOrders || 0,
           DELIVERED: stats.deliveredOrders || 0,
           CANCELED: stats.canceledOrders || 0,
+        });
+        setExtraStats({
+          totalRevenue: stats.totalRevenue || 0,
+          lowStockProducts: stats.lowStockProducts || 0,
         });
       }
     };
@@ -134,6 +142,37 @@ export function AdminDashboardPage() {
             icon="pi pi-terminal"
             onClick={() => navigate("/admin/logs")}
           />
+        </div>
+      </div>
+
+      {/* Overview Cards (Revenue & Stock Alerts) */}
+      <div className="grid mb-5">
+        <div className="col-12 md:col-6 p-2">
+          <div className="surface-card shadow-2 border-round border-left-4 border-green-500 p-4 flex align-items-center justify-content-between">
+            <div>
+              <span className="block text-500 font-bold uppercase text-xs tracking-wider mb-2">Receita Total</span>
+              <div className="text-4xl font-bold text-900">
+                {extraStats.totalRevenue.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </div>
+              <p className="text-500 text-xs m-0 mt-1">Exclui pedidos cancelados</p>
+            </div>
+            <div className="flex align-items-center justify-content-center border-round w-4rem h-4rem bg-green-100 text-green-700">
+              <i className="pi pi-dollar text-3xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-12 md:col-6 p-2">
+          <div className="surface-card shadow-2 border-round border-left-4 border-yellow-500 p-4 flex align-items-center justify-content-between" style={{ cursor: 'pointer' }} onClick={() => navigate("/admin/products")}>
+            <div>
+              <span className="block text-500 font-bold uppercase text-xs tracking-wider mb-2">Produtos com Estoque Baixo</span>
+              <div className="text-4xl font-bold text-900">{extraStats.lowStockProducts}</div>
+              <p className="text-500 text-xs m-0 mt-1">Produtos com 5 ou menos unidades (Clique para ver)</p>
+            </div>
+            <div className="flex align-items-center justify-content-center border-round w-4rem h-4rem bg-yellow-100 text-yellow-700">
+              <i className="pi pi-exclamation-triangle text-3xl"></i>
+            </div>
+          </div>
         </div>
       </div>
 
