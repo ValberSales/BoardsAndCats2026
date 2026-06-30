@@ -5,6 +5,7 @@ import br.edu.utfpr.pb.pw44s.server.dto.OrderDTO;
 import br.edu.utfpr.pb.pw44s.server.model.Order;
 import br.edu.utfpr.pb.pw44s.server.model.OrderDocument;
 import br.edu.utfpr.pb.pw44s.server.model.OrderStatus;
+import org.hibernate.Hibernate;
 import br.edu.utfpr.pb.pw44s.server.repository.OrderDocumentRepository;
 import br.edu.utfpr.pb.pw44s.server.repository.OrderRepository;
 import br.edu.utfpr.pb.pw44s.server.repository.ProductRepository;
@@ -92,17 +93,38 @@ public class AdminOrderController {
                         id, oldStatus, status, order.getTrackingCode()));
 
         // Send Notification Email
-        if (order.getClientDetails() != null && order.getClientDetails().getEmail() != null) {
-            String trackingInfo = (trackingCode != null && !trackingCode.trim().isEmpty())
-                    ? "\nCódigo de rastreamento: " + trackingCode
-                    : "";
-            String emailText = String.format("Olá %s,\n\nO status do seu pedido #%d foi atualizado para: %s.%s\n\nAgradecemos sua preferência!",
-                    order.getClientDetails().getName(),
-                    order.getId(),
-                    status,
-                    trackingInfo
-            );
-            emailService.sendEmail(order.getClientDetails().getEmail(), "Atualização do Pedido #" + order.getId(), emailText);
+        if (savedOrder.getClientDetails() != null && savedOrder.getClientDetails().getEmail() != null) {
+            // Eagerly load items and products within the open transaction context
+            Hibernate.initialize(savedOrder.getItems());
+            savedOrder.getItems().forEach(item -> Hibernate.initialize(item.getProduct()));
+
+            byte[] attachmentBytes = null;
+            String attachmentName = null;
+            String contentType = null;
+
+            if (status == OrderStatus.SHIPPED) {
+                try {
+                    List<OrderDocument> docs = orderDocumentRepository.findByOrderId(id);
+                    if (docs != null && !docs.isEmpty()) {
+                        // Use the latest document uploaded
+                        OrderDocument doc = docs.get(docs.size() - 1);
+                        InputStream docStream = minioService.downloadFile(doc.getMinioPath());
+                        if (docStream != null) {
+                            attachmentBytes = docStream.readAllBytes();
+                            attachmentName = doc.getFileName();
+                            contentType = doc.getContentType();
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erro ao obter documento do Minio para o envio do email: " + e.getMessage());
+                }
+            }
+
+            try {
+                emailService.sendOrderStatusUpdateEmail(savedOrder, oldStatus, status, attachmentBytes, attachmentName, contentType);
+            } catch (Exception e) {
+                System.err.println("Erro ao disparar email de atualizacao do pedido: " + e.getMessage());
+            }
         }
 
         return ResponseEntity.ok(modelMapper.map(savedOrder, OrderDTO.class));

@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.Hibernate;
+import br.edu.utfpr.pb.pw44s.server.service.EmailService;
 
 @Service
 public class OrderServiceImpl extends CrudServiceImpl<Order, Long> implements IOrderService {
@@ -29,19 +31,22 @@ public class OrderServiceImpl extends CrudServiceImpl<Order, Long> implements IO
     private final PaymentMethodRepository paymentMethodRepository;
     private final ICartService cartService;
     private final CartRepository cartRepository;
+    private final EmailService emailService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             ProductRepository productRepository,
                             AddressRepository addressRepository,
                             PaymentMethodRepository paymentMethodRepository,
                             ICartService cartService,
-                            CartRepository cartRepository) {
+                            CartRepository cartRepository,
+                            EmailService emailService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.addressRepository = addressRepository;
         this.paymentMethodRepository = paymentMethodRepository;
         this.cartService = cartService;
         this.cartRepository = cartRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -74,6 +79,19 @@ public class OrderServiceImpl extends CrudServiceImpl<Order, Long> implements IO
         // 7. Salva o pedido e limpa o carrinho
         Order savedOrder = orderRepository.save(order);
         cartRepository.deleteById(cartDTO.getId());
+
+        // Initialize lazy properties for async email sending
+        Hibernate.initialize(savedOrder.getItems());
+        savedOrder.getItems().forEach(item -> Hibernate.initialize(item.getProduct()));
+
+        try {
+            if (savedOrder.getClientDetails() != null && savedOrder.getClientDetails().getEmail() != null) {
+                emailService.sendOrderCreatedEmail(savedOrder);
+            }
+        } catch (Exception e) {
+            // Log warning but don't fail transaction
+            System.err.println("Erro ao disparar e-mail de confirmacao do pedido: " + e.getMessage());
+        }
 
         return savedOrder;
     }
