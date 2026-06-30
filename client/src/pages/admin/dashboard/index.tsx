@@ -160,10 +160,8 @@ export function AdminDashboardPage() {
               <i className="pi pi-dollar text-3xl"></i>
             </div>
           </div>
-        </div>
-
-        <div className="col-12 md:col-6 p-2">
-          <div className="surface-card shadow-2 border-round border-left-4 border-yellow-500 p-4 flex align-items-center justify-content-between" style={{ cursor: 'pointer' }} onClick={() => navigate("/admin/products")}>
+        </div>        <div className="col-12 md:col-6 p-2">
+          <div className="surface-card shadow-2 border-round border-left-4 border-yellow-500 p-4 flex align-items-center justify-content-between" style={{ cursor: 'pointer' }} onClick={() => navigate("/admin/products?filter=LOW_STOCK")}>
             <div>
               <span className="block text-500 font-bold uppercase text-xs tracking-wider mb-2">Produtos com Estoque Baixo</span>
               <div className="text-4xl font-bold text-900">{extraStats.lowStockProducts}</div>

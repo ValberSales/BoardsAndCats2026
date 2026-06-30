@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -54,8 +54,16 @@ export function AdminProductsPage() {
   const [submitted, setSubmitted] = useState(false);
   const [uploadingMain, setUploadingMain] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [searchParams] = useSearchParams();
   const [globalFilter, setGlobalFilter] = useState("");
   const [visibilityFilter, setVisibilityFilter] = useState("ALL");
+
+  useEffect(() => {
+    const filterParam = searchParams.get("filter");
+    if (filterParam) {
+      setVisibilityFilter(filterParam);
+    }
+  }, [searchParams]);
 
   const emptyProduct: IProduct = {
     name: "",
@@ -320,7 +328,8 @@ export function AdminProductsPage() {
     const filterOptions = [
       { label: "Todos", value: "ALL" },
       { label: "Ativos", value: "ACTIVE" },
-      { label: "Inativos", value: "INACTIVE" }
+      { label: "Inativos", value: "INACTIVE" },
+      { label: "Estoque Baixo", value: "LOW_STOCK" }
     ];
 
     return (
@@ -353,6 +362,7 @@ export function AdminProductsPage() {
   const filteredProducts = products.filter(p => {
     if (visibilityFilter === "ACTIVE") return p.visible !== false;
     if (visibilityFilter === "INACTIVE") return p.visible === false;
+    if (visibilityFilter === "LOW_STOCK") return p.stock !== null && p.stock !== undefined && p.stock <= 5;
     return true;
   });
 
